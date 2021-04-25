@@ -33,7 +33,12 @@ exports.handler = async (event, context, callback) => {
 	callback(null, {
 		isBase64Encoded: false,
 		statusCode: 200,
-		body: 'Success!'
+		body: 'Success!',
+    headers: {
+      'Content-Type': 'application/json',
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Credentials': true
+    }
 	}); 
 }
 

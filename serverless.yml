@@ -33,6 +33,7 @@ functions:
           method: GET
           path: /rsvp
           private: true
+          cors: true
   submit-rsvp-response:
     name: submit-rsvp-response-${opt:stage, 'dev'}
     handler:  submit-rsvp-response/index.handler
@@ -52,6 +53,7 @@ functions:
           method: POST
           path: /rsvp
           private: true
+          cors: true
 
 plugins:
   - serverless-pseudo-parameters

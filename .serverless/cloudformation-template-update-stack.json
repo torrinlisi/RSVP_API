@@ -225,7 +225,7 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/rsvp-service/dev/1619391301608-2021-04-25T22:55:01.608Z/validate-rsvp.zip"
+          "S3Key": "serverless/rsvp-service/dev/1619393402345-2021-04-25T23:30:02.345Z/validate-rsvp.zip"
         },
         "Handler": "s_validate_rsvp.handler",
         "Runtime": "nodejs12.x",
@@ -264,7 +264,7 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/rsvp-service/dev/1619391301608-2021-04-25T22:55:01.608Z/submit-rsvp-response.zip"
+          "S3Key": "serverless/rsvp-service/dev/1619393402345-2021-04-25T23:30:02.345Z/submit-rsvp-response.zip"
         },
         "Handler": "s_submit_rsvp_response.handler",
         "Runtime": "nodejs12.x",
@@ -296,24 +296,24 @@
         "SubmitDashrsvpDashresponseLogGroup"
       ]
     },
-    "ValidateDashrsvpLambdaVersion25Dth9LXQJB0VCdGe0EZBmF0iuj6Q33PmUPuVmwSSmQ": {
+    "ValidateDashrsvpLambdaVersionX2NNjl72G3pUs7snQ31H7IhvOSSgxmRPEEWYqzKWkuc": {
       "Type": "AWS::Lambda::Version",
       "DeletionPolicy": "Retain",
       "Properties": {
         "FunctionName": {
           "Ref": "ValidateDashrsvpLambdaFunction"
         },
-        "CodeSha256": "QuFzjG02kePNOLF+hk1Nq9kuJje5dloqn+0pgcitEQs="
+        "CodeSha256": "2l2RFgAL9WomSA9i9mkFc2dGhB5U5DOdNfZqXz67lp0="
       }
     },
-    "SubmitDashrsvpDashresponseLambdaVersionk0UAV7zAoDJbAV9OgH2c99zef4Y5uDYxsvoJAnV0s": {
+    "SubmitDashrsvpDashresponseLambdaVersionQnLSX197MNv9ZNXNTNPqlk1hD9PUEanivhuV1WTZa4": {
       "Type": "AWS::Lambda::Version",
       "DeletionPolicy": "Retain",
       "Properties": {
         "FunctionName": {
           "Ref": "SubmitDashrsvpDashresponseLambdaFunction"
         },
-        "CodeSha256": "TbZurc9idAbm92wldHww75Zh4Khstk43ckLiFxXdvs8="
+        "CodeSha256": "Aori1aLYaa/Lsd1oMbL8bLv2HrwdhUEvGVhxHjk6tNU="
       }
     },
     "ApiGatewayRestApi": {
@@ -338,6 +338,51 @@
           ]
         },
         "PathPart": "rsvp",
+        "RestApiId": {
+          "Ref": "ApiGatewayRestApi"
+        }
+      }
+    },
+    "ApiGatewayMethodRsvpOptions": {
+      "Type": "AWS::ApiGateway::Method",
+      "Properties": {
+        "AuthorizationType": "NONE",
+        "HttpMethod": "OPTIONS",
+        "MethodResponses": [
+          {
+            "StatusCode": "200",
+            "ResponseParameters": {
+              "method.response.header.Access-Control-Allow-Origin": true,
+              "method.response.header.Access-Control-Allow-Headers": true,
+              "method.response.header.Access-Control-Allow-Methods": true
+            },
+            "ResponseModels": {}
+          }
+        ],
+        "RequestParameters": {},
+        "Integration": {
+          "Type": "MOCK",
+          "RequestTemplates": {
+            "application/json": "{statusCode:200}"
+          },
+          "ContentHandling": "CONVERT_TO_TEXT",
+          "IntegrationResponses": [
+            {
+              "StatusCode": "200",
+              "ResponseParameters": {
+                "method.response.header.Access-Control-Allow-Origin": "'*'",
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
+                "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,POST,GET'"
+              },
+              "ResponseTemplates": {
+                "application/json": "#set($origin = $input.params(\"Origin\"))\n#if($origin == \"\") #set($origin = $input.params(\"origin\")) #end\n#if($origin.matches(\".+\")) #set($context.responseOverride.header.Access-Control-Allow-Origin = $origin) #end"
+              }
+            }
+          ]
+        },
+        "ResourceId": {
+          "Ref": "ApiGatewayResourceRsvp"
+        },
         "RestApiId": {
           "Ref": "ApiGatewayRestApi"
         }
@@ -429,7 +474,7 @@
         "MethodResponses": []
       }
     },
-    "ApiGatewayDeployment1619391294119": {
+    "ApiGatewayDeployment1619393394233": {
       "Type": "AWS::ApiGateway::Deployment",
       "Properties": {
         "RestApiId": {
@@ -438,6 +483,7 @@
         "StageName": "dev"
       },
       "DependsOn": [
+        "ApiGatewayMethodRsvpOptions",
         "ApiGatewayMethodRsvpGet",
         "ApiGatewayMethodRsvpPost"
       ]
@@ -456,11 +502,11 @@
           }
         ]
       },
-      "DependsOn": "ApiGatewayDeployment1619391294119"
+      "DependsOn": "ApiGatewayDeployment1619393394233"
     },
     "ApiGatewayUsagePlan": {
       "Type": "AWS::ApiGateway::UsagePlan",
-      "DependsOn": "ApiGatewayDeployment1619391294119",
+      "DependsOn": "ApiGatewayDeployment1619393394233",
       "Properties": {
         "ApiStages": [
           {
@@ -669,7 +715,7 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/rsvp-service/dev/1619391301608-2021-04-25T22:55:01.608Z/custom-resources.zip"
+          "S3Key": "serverless/rsvp-service/dev/1619393402345-2021-04-25T23:30:02.345Z/custom-resources.zip"
         },
         "FunctionName": "rsvp-service-dev-custom-resource-apigw-cw-role",
         "Handler": "apiGatewayCloudWatchRole/handler.handler",
@@ -741,7 +787,7 @@
     "ValidateDashrsvpLambdaFunctionQualifiedArn": {
       "Description": "Current Lambda function version",
       "Value": {
-        "Ref": "ValidateDashrsvpLambdaVersion25Dth9LXQJB0VCdGe0EZBmF0iuj6Q33PmUPuVmwSSmQ"
+        "Ref": "ValidateDashrsvpLambdaVersionX2NNjl72G3pUs7snQ31H7IhvOSSgxmRPEEWYqzKWkuc"
       },
       "Export": {
         "Name": "sls-rsvp-service-dev-ValidateDashrsvpLambdaFunctionQualifiedArn"
@@ -750,7 +796,7 @@
     "SubmitDashrsvpDashresponseLambdaFunctionQualifiedArn": {
       "Description": "Current Lambda function version",
       "Value": {
-        "Ref": "SubmitDashrsvpDashresponseLambdaVersionk0UAV7zAoDJbAV9OgH2c99zef4Y5uDYxsvoJAnV0s"
+        "Ref": "SubmitDashrsvpDashresponseLambdaVersionQnLSX197MNv9ZNXNTNPqlk1hD9PUEanivhuV1WTZa4"
       },
       "Export": {
         "Name": "sls-rsvp-service-dev-SubmitDashrsvpDashresponseLambdaFunctionQualifiedArn"
