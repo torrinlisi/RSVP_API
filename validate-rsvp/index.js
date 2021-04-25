@@ -27,7 +27,7 @@ exports.handler = async (event, context, callback) => {
 }
 
 async function getRSVPData(code) {
-  const query = 'select rsvp_person.*, rsvp.responded, people.name, people.age, meals.name from rsvp ' +
+  const query = 'select rsvp_person.*, rsvp.responded, people.name, people.age, meals.name as mealName from rsvp ' +
     'join rsvp_person on rsvp.id = rsvp_person.rsvp_id ' +
     'join people on rsvp_person.person_id = people.id ' +
     'left join meals on rsvp_person.meal_id = meals.id ' +

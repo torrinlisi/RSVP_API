@@ -33,6 +33,25 @@ functions:
           method: GET
           path: /rsvp
           private: true
+  submit-rsvp-response:
+    name: submit-rsvp-response-${opt:stage, 'dev'}
+    handler:  submit-rsvp-response/index.handler
+    environment:
+      PGDATABASE: ${param:PGDATABASE}
+      PGHOST: ${param:PGHOST}
+      PGPASSWORD: ${param:PGPASSWORD}
+      PGPORT: ${param:PGPORT}
+      PGUSER: ${param:PGUSER}
+    package:
+      include:
+        -  submit-rsvp-response/index.js
+    layers:
+      - arn:aws:lambda:#{AWS::Region}:#{AWS::AccountId}:layer:node-pg:1
+    events:
+      - http:
+          method: POST
+          path: /rsvp
+          private: true
 
 plugins:
   - serverless-pseudo-parameters
