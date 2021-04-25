@@ -1,0 +1,15 @@
+{
+  "name": "rsvp",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "deploy": "sls deploy --aws-profile default",
+    "remove": "sls remove --aws-profile default"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "serverless-pseudo-parameters": "^2.5.0"
+  }
+}

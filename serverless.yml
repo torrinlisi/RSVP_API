@@ -1,0 +1,38 @@
+org: torrinlisi
+app: rsvp
+service: rsvp-service
+package:
+  exclude:
+    - '**/**'
+  individually: true
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  memorySize: 128
+  apiKeys:
+    - rsvp-api-key
+
+functions:
+  validate-rsvp:
+    name: validate-rsvp-${opt:stage, 'dev'}
+    handler:  validate-rsvp/index.handler
+    environment:
+      PGDATABASE: ${param:PGDATABASE}
+      PGHOST: ${param:PGHOST}
+      PGPASSWORD: ${param:PGPASSWORD}
+      PGPORT: ${param:PGPORT}
+      PGUSER: ${param:PGUSER}
+    package:
+      include:
+        -  validate-rsvp/index.js
+    layers:
+      - arn:aws:lambda:#{AWS::Region}:#{AWS::AccountId}:layer:node-pg:1
+    events:
+      - http:
+          method: GET
+          path: /rsvp
+          private: true
+
+plugins:
+  - serverless-pseudo-parameters
