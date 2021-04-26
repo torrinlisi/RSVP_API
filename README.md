@@ -1,6 +1,5 @@
 Get rsvp
-query params rsvpCode=HY9KZDYN
-x-api-key 1HBb6jeAJX7n8X5bVsAjGaHwbSG8r4Jg3Afz8WVG
+query params rsvpCode=ABCDEFG12
 https://9ddaq8z128.execute-api.us-east-1.amazonaws.com/dev/rsvp
 
 
@@ -23,5 +22,4 @@ body json
 	],
 	"rsvpID": "39"
 }
-x-api-key 1HBb6jeAJX7n8X5bVsAjGaHwbSG8r4Jg3Afz8WVG
 https://9ddaq8z128.execute-api.us-east-1.amazonaws.com/dev/rsvp
