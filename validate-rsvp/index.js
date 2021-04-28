@@ -10,9 +10,9 @@ exports.handler = async (event, context, callback) => {
 		port: process.env.PGPORT
 	});
 
-  let rsvpData = await getRSVPData(event.queryStringParameters.rsvpCode);
+  let rsvpData = await getRSVPData(event.queryStringParameters.rsvpCode.toUpperCase());
 
-  let  mealData = await getMealData();
+  let mealData = await getMealData();
 
   await pool.end();
 

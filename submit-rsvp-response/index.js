@@ -16,11 +16,12 @@ exports.handler = async (event, context, callback) => {
   });
 
   body.people.forEach(async (element) => {
-    if(
-      !/^[a-zA-Z0-9',&\s"]{0,250}$/.test(element.allergies) ||
-      !/^[0-9]{0,5}$/.test(element.mealID)
-    )
-      throw new Error('Invalid body.');
+    if(element.isAttending)
+      if(
+        !/^[a-zA-Z0-9',&\s"]{0,250}$/.test(element.allergies) ||
+        !/^[0-9]{0,5}$/.test(element.mealID)
+      )
+        throw new Error('Invalid body.');
 
     await saveSingleResponse(element);
   });
