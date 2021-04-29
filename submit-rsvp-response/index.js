@@ -19,7 +19,7 @@ exports.handler = async (event, context, callback) => {
     if(element.isAttending)
       if(
         !/^[a-zA-Z0-9',&\s"]{0,250}$/.test(element.allergies) ||
-        !/^[0-9]{0,5}$/.test(element.mealID)
+        !/^[0-9]{1,5}$/.test(element.mealID)
       )
         throw new Error('Invalid body.');
 
@@ -46,7 +46,7 @@ exports.handler = async (event, context, callback) => {
 async function saveSingleResponse(saveObj) {
   const query = 'update rsvp_person ' + 
     `set meal_id = ${saveObj.mealID}, ` +
-    `allergy = '${saveObj.allergies}', ` +
+    (saveObj.allergies ? `allergy = '${saveObj.allergies}', ` : '') +
     `is_attending = ${saveObj.isAttending} ` +
     `where id = ${saveObj.rsvpPersonID}`;
 
