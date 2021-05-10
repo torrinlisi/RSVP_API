@@ -28,7 +28,7 @@ exports.handler = async(event, context, callback) => {
     });
 
     async function getAttendanceData () {
-        const query = 'SELECT rp.id, rsvp_id, person_id, p.name , rp.meal_id, meals.name, allergy, is_attending, covid_status ' +
+        const query = 'SELECT rp.id, rsvp_id, person_id, p.name , rp.meal_id, meals.name as MealName, allergy, is_attending, covid_status ' +
             'FROM public.rsvp_person rp ' +
             'join people p on rp.person_id = p.id ' + 
             'left join meals on rp.meal_id = meals.id '+
