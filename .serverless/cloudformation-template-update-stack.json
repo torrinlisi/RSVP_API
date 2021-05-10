@@ -71,16 +71,22 @@
         }
       }
     },
+    "AdminDashrsvpLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/admin-rsvp-yan"
+      }
+    },
     "ValidateDashrsvpLogGroup": {
       "Type": "AWS::Logs::LogGroup",
       "Properties": {
-        "LogGroupName": "/aws/lambda/validate-rsvp-dev"
+        "LogGroupName": "/aws/lambda/validate-rsvp-yan"
       }
     },
     "SubmitDashrsvpDashresponseLogGroup": {
       "Type": "AWS::Logs::LogGroup",
       "Properties": {
-        "LogGroupName": "/aws/lambda/submit-rsvp-response-dev"
+        "LogGroupName": "/aws/lambda/submit-rsvp-response-yan"
       }
     },
     "IamRoleLambdaExecution": {
@@ -109,7 +115,7 @@
                 "-",
                 [
                   "rsvp-service",
-                  "dev",
+                  "yan",
                   "lambda"
                 ]
               ]
@@ -125,10 +131,13 @@
                   ],
                   "Resource": [
                     {
-                      "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/validate-rsvp-dev:*"
+                      "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/admin-rsvp-yan:*"
                     },
                     {
-                      "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/submit-rsvp-response-dev:*"
+                      "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/validate-rsvp-yan:*"
+                    },
+                    {
+                      "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/submit-rsvp-response-yan:*"
                     }
                   ]
                 },
@@ -139,10 +148,13 @@
                   ],
                   "Resource": [
                     {
-                      "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/validate-rsvp-dev:*:*"
+                      "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/admin-rsvp-yan:*:*"
                     },
                     {
-                      "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/submit-rsvp-response-dev:*:*"
+                      "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/validate-rsvp-yan:*:*"
+                    },
+                    {
+                      "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/submit-rsvp-response-yan:*:*"
                     }
                   ]
                 }
@@ -156,7 +168,7 @@
             "-",
             [
               "rsvp-service",
-              "dev",
+              "yan",
               {
                 "Ref": "AWS::Region"
               },
@@ -200,6 +212,12 @@
                   "Resource": [
                     {
                       "Fn::GetAtt": [
+                        "AdminDashrsvpLogGroup",
+                        "Arn"
+                      ]
+                    },
+                    {
+                      "Fn::GetAtt": [
                         "ValidateDashrsvpLogGroup",
                         "Arn"
                       ]
@@ -218,6 +236,45 @@
         ]
       }
     },
+    "AdminDashrsvpLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "ServerlessDeploymentBucket"
+          },
+          "S3Key": "serverless/rsvp-service/yan/1620624023391-2021-05-10T05:20:23.391Z/admin-rsvp.zip"
+        },
+        "Handler": "s_admin_rsvp.handler",
+        "Runtime": "nodejs12.x",
+        "FunctionName": "admin-rsvp-yan",
+        "MemorySize": 128,
+        "Timeout": 6,
+        "Environment": {
+          "Variables": {
+            "PGDATABASE": "postgres",
+            "PGHOST": "weddingrsvp.cqoq2ta93eyo.us-east-1.rds.amazonaws.com",
+            "PGPASSWORD": "0kayo-crux-mortified3-Closet",
+            "PGPORT": "5432",
+            "PGUSER": "postgres"
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "IamRoleLambdaExecution",
+            "Arn"
+          ]
+        },
+        "Layers": [
+          {
+            "Fn::Sub": "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:layer:node-pg:1"
+          }
+        ]
+      },
+      "DependsOn": [
+        "AdminDashrsvpLogGroup"
+      ]
+    },
     "ValidateDashrsvpLambdaFunction": {
       "Type": "AWS::Lambda::Function",
       "Properties": {
@@ -225,11 +282,11 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/rsvp-service/dev/1619996509282-2021-05-02T23:01:49.282Z/validate-rsvp.zip"
+          "S3Key": "serverless/rsvp-service/yan/1620624023391-2021-05-10T05:20:23.391Z/validate-rsvp.zip"
         },
         "Handler": "s_validate_rsvp.handler",
         "Runtime": "nodejs12.x",
-        "FunctionName": "validate-rsvp-dev",
+        "FunctionName": "validate-rsvp-yan",
         "MemorySize": 128,
         "Timeout": 6,
         "Environment": {
@@ -264,11 +321,11 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/rsvp-service/dev/1619996509282-2021-05-02T23:01:49.282Z/submit-rsvp-response.zip"
+          "S3Key": "serverless/rsvp-service/yan/1620624023391-2021-05-10T05:20:23.391Z/submit-rsvp-response.zip"
         },
         "Handler": "s_submit_rsvp_response.handler",
         "Runtime": "nodejs12.x",
-        "FunctionName": "submit-rsvp-response-dev",
+        "FunctionName": "submit-rsvp-response-yan",
         "MemorySize": 128,
         "Timeout": 6,
         "Environment": {
@@ -296,36 +353,61 @@
         "SubmitDashrsvpDashresponseLogGroup"
       ]
     },
-    "ValidateDashrsvpLambdaVersiongJjyqNtrmgDL8r4z4FId9J8FU91FvhsM3SZG7yBMew": {
+    "AdminDashrsvpLambdaVersioniUQjr2KrW0V7M9zjufGbO0i6P8iESo5JEgiG0khmcE": {
       "Type": "AWS::Lambda::Version",
       "DeletionPolicy": "Retain",
       "Properties": {
         "FunctionName": {
-          "Ref": "ValidateDashrsvpLambdaFunction"
+          "Ref": "AdminDashrsvpLambdaFunction"
         },
-        "CodeSha256": "aAngqRStz6b+l6Xwz4YcpCDtyzZt0pSM+NzSb4Ab+4I="
+        "CodeSha256": "Ngf4kMwHaHBbmo2aISDIzwjxAoy894gWnaVXEw1zvSU="
       }
     },
-    "SubmitDashrsvpDashresponseLambdaVersionmLQRD637aQf59FxBkrWoOzvn0NOBUN9o8a0tC0kEJ8": {
+    "SubmitDashrsvpDashresponseLambdaVersionhqLcuISOOX5rTeSziD85XJ3RvWGKZwwNXCn3HMp8D4": {
       "Type": "AWS::Lambda::Version",
       "DeletionPolicy": "Retain",
       "Properties": {
         "FunctionName": {
           "Ref": "SubmitDashrsvpDashresponseLambdaFunction"
         },
-        "CodeSha256": "n1Px541IwDuD05pcFHYyGrMStIN/RDGiH4wviJafVN0="
+        "CodeSha256": "AzWdAreSuxxdh1docR2e5RRKqKAqxnq9pOhKKWurynU="
+      }
+    },
+    "ValidateDashrsvpLambdaVersion1dVCFkof654oDDYbucj2eI5fmh7qy5uJwZja7Ong": {
+      "Type": "AWS::Lambda::Version",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "ValidateDashrsvpLambdaFunction"
+        },
+        "CodeSha256": "aWtCj1m2znx4PdS/OLq+khIo7/XzIT9T3kAQCHrTbMo="
       }
     },
     "ApiGatewayRestApi": {
       "Type": "AWS::ApiGateway::RestApi",
       "Properties": {
-        "Name": "dev-rsvp-service",
+        "Name": "yan-rsvp-service",
         "EndpointConfiguration": {
           "Types": [
             "EDGE"
           ]
         },
         "Policy": ""
+      }
+    },
+    "ApiGatewayResourceAdmin": {
+      "Type": "AWS::ApiGateway::Resource",
+      "Properties": {
+        "ParentId": {
+          "Fn::GetAtt": [
+            "ApiGatewayRestApi",
+            "RootResourceId"
+          ]
+        },
+        "PathPart": "admin",
+        "RestApiId": {
+          "Ref": "ApiGatewayRestApi"
+        }
       }
     },
     "ApiGatewayResourceRsvp": {
@@ -338,6 +420,51 @@
           ]
         },
         "PathPart": "rsvp",
+        "RestApiId": {
+          "Ref": "ApiGatewayRestApi"
+        }
+      }
+    },
+    "ApiGatewayMethodAdminOptions": {
+      "Type": "AWS::ApiGateway::Method",
+      "Properties": {
+        "AuthorizationType": "NONE",
+        "HttpMethod": "OPTIONS",
+        "MethodResponses": [
+          {
+            "StatusCode": "200",
+            "ResponseParameters": {
+              "method.response.header.Access-Control-Allow-Origin": true,
+              "method.response.header.Access-Control-Allow-Headers": true,
+              "method.response.header.Access-Control-Allow-Methods": true
+            },
+            "ResponseModels": {}
+          }
+        ],
+        "RequestParameters": {},
+        "Integration": {
+          "Type": "MOCK",
+          "RequestTemplates": {
+            "application/json": "{statusCode:200}"
+          },
+          "ContentHandling": "CONVERT_TO_TEXT",
+          "IntegrationResponses": [
+            {
+              "StatusCode": "200",
+              "ResponseParameters": {
+                "method.response.header.Access-Control-Allow-Origin": "'*'",
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
+                "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET'"
+              },
+              "ResponseTemplates": {
+                "application/json": "#set($origin = $input.params(\"Origin\"))\n#if($origin == \"\") #set($origin = $input.params(\"origin\")) #end\n#if($origin.matches(\".+\")) #set($context.responseOverride.header.Access-Control-Allow-Origin = $origin) #end"
+              }
+            }
+          ]
+        },
+        "ResourceId": {
+          "Ref": "ApiGatewayResourceAdmin"
+        },
         "RestApiId": {
           "Ref": "ApiGatewayRestApi"
         }
@@ -386,6 +513,49 @@
         "RestApiId": {
           "Ref": "ApiGatewayRestApi"
         }
+      }
+    },
+    "ApiGatewayMethodAdminGet": {
+      "Type": "AWS::ApiGateway::Method",
+      "Properties": {
+        "HttpMethod": "GET",
+        "RequestParameters": {},
+        "ResourceId": {
+          "Ref": "ApiGatewayResourceAdmin"
+        },
+        "RestApiId": {
+          "Ref": "ApiGatewayRestApi"
+        },
+        "ApiKeyRequired": true,
+        "AuthorizationType": "NONE",
+        "Integration": {
+          "IntegrationHttpMethod": "POST",
+          "Type": "AWS_PROXY",
+          "Uri": {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":apigateway:",
+                {
+                  "Ref": "AWS::Region"
+                },
+                ":lambda:path/2015-03-31/functions/",
+                {
+                  "Fn::GetAtt": [
+                    "AdminDashrsvpLambdaFunction",
+                    "Arn"
+                  ]
+                },
+                "/invocations"
+              ]
+            ]
+          }
+        },
+        "MethodResponses": []
       }
     },
     "ApiGatewayMethodRsvpGet": {
@@ -474,16 +644,18 @@
         "MethodResponses": []
       }
     },
-    "ApiGatewayDeployment1619996499667": {
+    "ApiGatewayDeployment1620624016647": {
       "Type": "AWS::ApiGateway::Deployment",
       "Properties": {
         "RestApiId": {
           "Ref": "ApiGatewayRestApi"
         },
-        "StageName": "dev"
+        "StageName": "yan"
       },
       "DependsOn": [
+        "ApiGatewayMethodAdminOptions",
         "ApiGatewayMethodRsvpOptions",
+        "ApiGatewayMethodAdminGet",
         "ApiGatewayMethodRsvpGet",
         "ApiGatewayMethodRsvpPost"
       ]
@@ -492,32 +664,32 @@
       "Type": "AWS::ApiGateway::ApiKey",
       "Properties": {
         "Enabled": true,
-        "Name": "rsvp-api-key",
+        "Name": "rsvp-api-key-yan",
         "StageKeys": [
           {
             "RestApiId": {
               "Ref": "ApiGatewayRestApi"
             },
-            "StageName": "dev"
+            "StageName": "yan"
           }
         ]
       },
-      "DependsOn": "ApiGatewayDeployment1619996499667"
+      "DependsOn": "ApiGatewayDeployment1620624016647"
     },
     "ApiGatewayUsagePlan": {
       "Type": "AWS::ApiGateway::UsagePlan",
-      "DependsOn": "ApiGatewayDeployment1619996499667",
+      "DependsOn": "ApiGatewayDeployment1620624016647",
       "Properties": {
         "ApiStages": [
           {
             "ApiId": {
               "Ref": "ApiGatewayRestApi"
             },
-            "Stage": "dev"
+            "Stage": "yan"
           }
         ],
-        "Description": "Usage plan for rsvp-service dev stage",
-        "UsagePlanName": "rsvp-service-dev"
+        "Description": "Usage plan for rsvp-service yan stage",
+        "UsagePlanName": "rsvp-service-yan"
       }
     },
     "ApiGatewayUsagePlanKey1": {
@@ -529,6 +701,43 @@
         "KeyType": "API_KEY",
         "UsagePlanId": {
           "Ref": "ApiGatewayUsagePlan"
+        }
+      }
+    },
+    "AdminDashrsvpLambdaPermissionApiGateway": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "AdminDashrsvpLambdaFunction",
+            "Arn"
+          ]
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "ApiGatewayRestApi"
+              },
+              "/*/*"
+            ]
+          ]
         }
       }
     },
@@ -609,7 +818,7 @@
     "ApiGatewayLogGroup": {
       "Type": "AWS::Logs::LogGroup",
       "Properties": {
-        "LogGroupName": "/aws/api-gateway/rsvp-service-dev"
+        "LogGroupName": "/aws/api-gateway/rsvp-service-yan"
       }
     },
     "CustomApiGatewayAccountCloudWatchRole": {
@@ -649,7 +858,7 @@
               "Fn::Join": [
                 "-",
                 [
-                  "dev",
+                  "yan",
                   "rsvp-service",
                   "custom-resources-lambda"
                 ]
@@ -715,9 +924,9 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/rsvp-service/dev/1619996509282-2021-05-02T23:01:49.282Z/custom-resources.zip"
+          "S3Key": "serverless/rsvp-service/yan/1620624023391-2021-05-10T05:20:23.391Z/custom-resources.zip"
         },
-        "FunctionName": "rsvp-service-dev-custom-resource-apigw-cw-role",
+        "FunctionName": "rsvp-service-yan-custom-resource-apigw-cw-role",
         "Handler": "apiGatewayCloudWatchRole/handler.handler",
         "MemorySize": 1024,
         "Runtime": "nodejs12.x",
@@ -733,10 +942,20 @@
         "IamRoleCustomResourcesLambdaExecution"
       ]
     },
+    "CloudWatchLogsSubscriptionFilterAdminDashrsvpLogGroup": {
+      "Type": "AWS::Logs::SubscriptionFilter",
+      "Properties": {
+        "DestinationArn": "arn:aws:logs:us-east-1:802587217904:destination:2d6b4ba5-5abb-4b7f-a9f3-25ad1d4b4dfc#FJMjZNdlwlKbR6PdRj#rsvp-service#yan",
+        "FilterPattern": "?\"REPORT RequestId: \" ?\"SERVERLESS_ENTERPRISE\"",
+        "LogGroupName": {
+          "Ref": "AdminDashrsvpLogGroup"
+        }
+      }
+    },
     "CloudWatchLogsSubscriptionFilterValidateDashrsvpLogGroup": {
       "Type": "AWS::Logs::SubscriptionFilter",
       "Properties": {
-        "DestinationArn": "arn:aws:logs:us-east-1:802587217904:destination:2d6b4ba5-5abb-4b7f-a9f3-25ad1d4b4dfc#FJMjZNdlwlKbR6PdRj#rsvp-service#dev",
+        "DestinationArn": "arn:aws:logs:us-east-1:802587217904:destination:2d6b4ba5-5abb-4b7f-a9f3-25ad1d4b4dfc#FJMjZNdlwlKbR6PdRj#rsvp-service#yan",
         "FilterPattern": "?\"REPORT RequestId: \" ?\"SERVERLESS_ENTERPRISE\"",
         "LogGroupName": {
           "Ref": "ValidateDashrsvpLogGroup"
@@ -746,7 +965,7 @@
     "CloudWatchLogsSubscriptionFilterSubmitDashrsvpDashresponseLogGroup": {
       "Type": "AWS::Logs::SubscriptionFilter",
       "Properties": {
-        "DestinationArn": "arn:aws:logs:us-east-1:802587217904:destination:2d6b4ba5-5abb-4b7f-a9f3-25ad1d4b4dfc#FJMjZNdlwlKbR6PdRj#rsvp-service#dev",
+        "DestinationArn": "arn:aws:logs:us-east-1:802587217904:destination:2d6b4ba5-5abb-4b7f-a9f3-25ad1d4b4dfc#FJMjZNdlwlKbR6PdRj#rsvp-service#yan",
         "FilterPattern": "?\"REPORT RequestId: \" ?\"SERVERLESS_ENTERPRISE\"",
         "LogGroupName": {
           "Ref": "SubmitDashrsvpDashresponseLogGroup"
@@ -756,7 +975,7 @@
     "CloudWatchLogsSubscriptionFilterApiGatewayLogGroup": {
       "Type": "AWS::Logs::SubscriptionFilter",
       "Properties": {
-        "DestinationArn": "arn:aws:logs:us-east-1:802587217904:destination:2d6b4ba5-5abb-4b7f-a9f3-25ad1d4b4dfc#FJMjZNdlwlKbR6PdRj#rsvp-service#dev",
+        "DestinationArn": "arn:aws:logs:us-east-1:802587217904:destination:2d6b4ba5-5abb-4b7f-a9f3-25ad1d4b4dfc#FJMjZNdlwlKbR6PdRj#rsvp-service#yan",
         "FilterPattern": "\"SLS_ACCESS_LOG\"",
         "LogGroupName": {
           "Ref": "ApiGatewayLogGroup"
@@ -770,7 +989,7 @@
         "Ref": "ServerlessDeploymentBucket"
       },
       "Export": {
-        "Name": "sls-rsvp-service-dev-ServerlessDeploymentBucketName"
+        "Name": "sls-rsvp-service-yan-ServerlessDeploymentBucketName"
       }
     },
     "EnterpriseLogAccessIamRole": {
@@ -781,25 +1000,34 @@
         ]
       },
       "Export": {
-        "Name": "sls-rsvp-service-dev-EnterpriseLogAccessIamRole"
+        "Name": "sls-rsvp-service-yan-EnterpriseLogAccessIamRole"
       }
     },
-    "ValidateDashrsvpLambdaFunctionQualifiedArn": {
+    "AdminDashrsvpLambdaFunctionQualifiedArn": {
       "Description": "Current Lambda function version",
       "Value": {
-        "Ref": "ValidateDashrsvpLambdaVersiongJjyqNtrmgDL8r4z4FId9J8FU91FvhsM3SZG7yBMew"
+        "Ref": "AdminDashrsvpLambdaVersioniUQjr2KrW0V7M9zjufGbO0i6P8iESo5JEgiG0khmcE"
       },
       "Export": {
-        "Name": "sls-rsvp-service-dev-ValidateDashrsvpLambdaFunctionQualifiedArn"
+        "Name": "sls-rsvp-service-yan-AdminDashrsvpLambdaFunctionQualifiedArn"
       }
     },
     "SubmitDashrsvpDashresponseLambdaFunctionQualifiedArn": {
       "Description": "Current Lambda function version",
       "Value": {
-        "Ref": "SubmitDashrsvpDashresponseLambdaVersionmLQRD637aQf59FxBkrWoOzvn0NOBUN9o8a0tC0kEJ8"
+        "Ref": "SubmitDashrsvpDashresponseLambdaVersionhqLcuISOOX5rTeSziD85XJ3RvWGKZwwNXCn3HMp8D4"
       },
       "Export": {
-        "Name": "sls-rsvp-service-dev-SubmitDashrsvpDashresponseLambdaFunctionQualifiedArn"
+        "Name": "sls-rsvp-service-yan-SubmitDashrsvpDashresponseLambdaFunctionQualifiedArn"
+      }
+    },
+    "ValidateDashrsvpLambdaFunctionQualifiedArn": {
+      "Description": "Current Lambda function version",
+      "Value": {
+        "Ref": "ValidateDashrsvpLambdaVersion1dVCFkof654oDDYbucj2eI5fmh7qy5uJwZja7Ong"
+      },
+      "Export": {
+        "Name": "sls-rsvp-service-yan-ValidateDashrsvpLambdaFunctionQualifiedArn"
       }
     },
     "ServiceEndpoint": {
@@ -820,12 +1048,12 @@
             {
               "Ref": "AWS::URLSuffix"
             },
-            "/dev"
+            "/yan"
           ]
         ]
       },
       "Export": {
-        "Name": "sls-rsvp-service-dev-ServiceEndpoint"
+        "Name": "sls-rsvp-service-yan-ServiceEndpoint"
       }
     }
   }

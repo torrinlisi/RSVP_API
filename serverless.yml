@@ -11,9 +11,29 @@ provider:
   runtime: nodejs12.x
   memorySize: 128
   apiKeys:
-    - rsvp-api-key
+    - rsvp-api-key-${opt:stage, 'dev'}
 
 functions:
+  admin-rsvp:
+    name: admin-rsvp-${opt:stage, 'dev'}
+    handler: admin-rsvp/index.handler
+    environment:
+      PGDATABASE: ${param:PGDATABASE}
+      PGHOST: ${param:PGHOST}
+      PGPASSWORD: ${param:PGPASSWORD}
+      PGPORT: ${param:PGPORT}
+      PGUSER: ${param:PGUSER}
+    package:
+      include:
+        - admin-rsvp/index.js
+    layers:
+      - arn:aws:lambda:#{AWS::Region}:#{AWS::AccountId}:layer:node-pg:1
+    events:
+      - http:
+          method: GET
+          path: /admin
+          private: true
+          cors: true
   validate-rsvp:
     name: validate-rsvp-${opt:stage, 'dev'}
     handler:  validate-rsvp/index.handler

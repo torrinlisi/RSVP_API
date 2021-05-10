@@ -4,8 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "deploy": "sls deploy --aws-profile default",
-    "remove": "sls remove --aws-profile default"
+    "deploy": "sls deploy --stage yan --aws-profile default",
+    "remove": "sls remove --stage yan --aws-profile default",
+    "deployProd": "sls deploy --aws-profile default",
+    "removeProd": "sls remove --aws-profile default"
   },
   "author": "",
   "license": "ISC",
