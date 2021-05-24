@@ -36,7 +36,7 @@ exports.handler = async(event, context, callback) => {
             'FROM public.rsvp_person rp ' +
             'join people p on rp.person_id = p.id ' + 
             'left join meals on rp.meal_id = meals.id '+
-            (adminCondition === 'no respond' ? 'where is_attending IS NULL;' : `where is_attending= ${adminCondition}`);
+            (adminCondition === 'awaiting' ? 'where is_attending IS NULL;' : `where is_attending= ${adminCondition}`);
 
         let data;
         try {
