@@ -2,6 +2,7 @@ const {Pool} = require('pg');
 let pool;
 
 exports.handler = async(event, context, callback) => {
+    console.log(event);
     pool = new Pool({
         user: process.env.PGUSER,
         host: process.env.PGHOST,
@@ -10,7 +11,10 @@ exports.handler = async(event, context, callback) => {
         port: process.env.PGPORT
     });
 
-    let attendanceData = await getAttendanceData();
+    //pass in variable into get attendance from the query parameters
+    let adminCondition = event.queryStringParameters.adminCondition;
+    console.log(adminCondition);
+    let attendanceData = await getAttendanceData(adminCondition);
 
     await pool.end();
 
@@ -27,12 +31,12 @@ exports.handler = async(event, context, callback) => {
           }
     });
 
-    async function getAttendanceData () {
+    async function getAttendanceData (adminCondition) { 
         const query = 'SELECT rp.id, rsvp_id, person_id, p.name , rp.meal_id, meals.name as MealName, allergy, is_attending, covid_status ' +
             'FROM public.rsvp_person rp ' +
             'join people p on rp.person_id = p.id ' + 
             'left join meals on rp.meal_id = meals.id '+
-            'where is_attending = true';
+            (adminCondition === 'no respond' ? 'where is_attending IS NULL;' : `where is_attending= ${adminCondition}`);
 
         let data;
         try {
