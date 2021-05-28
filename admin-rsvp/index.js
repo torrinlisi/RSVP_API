@@ -14,7 +14,7 @@ exports.handler = async(event, context, callback) => {
     //pass in variable into get guests info from the query parameters
     let adminCondition = event.queryStringParameters.adminCondition;
     console.log(adminCondition);
-    let guestsData = await getGuestsData(adminCondition);
+    let guestData = await getGuestData(adminCondition);
 
     await pool.end();
 
@@ -22,7 +22,7 @@ exports.handler = async(event, context, callback) => {
         isBase64Encoded: false,
 		statusCode: 200,
 		body: JSON.stringify({
-            guestsData: guestsData
+            guestData: guestData
         }),
         headers: {
             'Content-Type': 'application/json',
@@ -31,7 +31,7 @@ exports.handler = async(event, context, callback) => {
           }
     });
 
-    async function getGuestsData (adminCondition) { 
+    async function getGuestData (adminCondition) { 
         const query = 'SELECT rp.id, rsvp_id, person_id, p.name , rp.meal_id, meals.name as MealName, allergy, is_attending, covid_status ' +
             'FROM public.rsvp_person rp ' +
             'join people p on rp.person_id = p.id ' + 
